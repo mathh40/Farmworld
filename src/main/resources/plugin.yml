@@ -1,0 +1,7 @@
+name: Farmworld
+version: '${version}'
+main: com.mathh40.farmworld.Farmworld
+api-version: 1.19
+depend: [ worldedit ]
+authors: [ mathh40 ]
+description: Auto Farmworld maker
