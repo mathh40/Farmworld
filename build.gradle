@@ -23,8 +23,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
-    compileOnly 'com.sk89q.worldedit:worldedit-core:7.3.0-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.7'
     compileOnly 'com.onarandombox.multiversecore:Multiverse-Core:4.3.1'
 }
 

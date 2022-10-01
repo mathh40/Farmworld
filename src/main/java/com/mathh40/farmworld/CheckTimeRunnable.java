@@ -1,6 +1,7 @@
 package com.mathh40.farmworld;
-
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
@@ -25,6 +26,9 @@ public class CheckTimeRunnable extends BukkitRunnable {
         {
             plugin.getServer().broadcastMessage("Farmwelt wird neu erstellt .....");
             plugin.getMVWorldManager().regenWorld("farmworld",true,true,"",true);
+            MultiverseWorld farmworldWorld = plugin.getMVWorldManager().getMVWorld("farmworld");
+            World world = farmworldWorld.getCBWorld();
+            plugin.placeSchematics(plugin.getClipboard(),new Location(world, 0, world.getHighestBlockAt(0, 0).getY() - 1, 0));
             plugin.getServer().broadcastMessage("Farmwelt wurde erstellt");
         }
 
