@@ -24,12 +24,7 @@ public class CheckTimeRunnable extends BukkitRunnable {
         Duration duration = Duration.between(now, last);
         if(duration.toDays() == 1)
         {
-            plugin.getServer().broadcastMessage("Farmwelt wird neu erstellt .....");
-            plugin.getMVWorldManager().regenWorld("farmworld",true,true,"",true);
-            MultiverseWorld farmworldWorld = plugin.getMVWorldManager().getMVWorld("farmworld");
-            World world = farmworldWorld.getCBWorld();
-            plugin.placeSchematics(plugin.getClipboard(),new Location(world, 0, world.getHighestBlockAt(0, 0).getY() - 1, 0));
-            plugin.getServer().broadcastMessage("Farmwelt wurde erstellt");
+            plugin.regenFarmworld();
         }
 
     }

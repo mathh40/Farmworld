@@ -35,14 +35,18 @@ public final class Farmworld extends JavaPlugin {
     static MultiverseCore core;
     private FileConfiguration createtimefileconfig;
     private Clipboard clipboard;
-    private File createtimefile = new File(getDataFolder(), "farmworldcreate.yml");
+    private final File createtimefile = new File(getDataFolder(), "farmworldcreate.yml");
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         createCustomConfig();
+        this.getCommand("farmworld").setExecutor(new CommandFarmworld(this));
+
         // Plugin startup logic
-        File schematicfile = new File(Bukkit.getServer().getPluginManager().getPlugin("WorldEdit").getDataFolder().getAbsolutePath() + getConfig().getString("spawn-schematic"));
+        String path = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit").getDataFolder().getAbsolutePath() + File.separator + "schematics" + File.separator + getConfig().getString("spawn-schematic");
+        Bukkit.getServer().getLogger().log(Level.INFO,"Schematics Path " + path );
+        File schematicfile = new File(path);
         ClipboardFormat format = ClipboardFormats.findByFile(schematicfile);
         try {
             assert format != null;
@@ -50,7 +54,7 @@ public final class Farmworld extends JavaPlugin {
                 clipboard = reader.read();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Bukkit.getServer().getLogger().log(Level.WARNING,"Can not Load " + path );
         }
 
         core = (MultiverseCore) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -69,7 +73,7 @@ public final class Farmworld extends JavaPlugin {
                 );
                 farmworldWorld = worldManager.getMVWorld("farmworld");
                 World world = farmworldWorld.getCBWorld();
-                placeSchematics(clipboard,new Location(world, 0, world.getHighestBlockAt(0, 0).getY() - 1, 0));
+                placeSchematics(clipboard,new Location(world, 0, world.getHighestBlockAt(0, 0).getY(), 0));
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 createtimefileconfig.set("time", now.format(formatter));
@@ -86,7 +90,7 @@ public final class Farmworld extends JavaPlugin {
             farmworldWorld.setBedRespawn(false);
             farmworldWorld.setGameMode(GameMode.SURVIVAL);
             World world = farmworldWorld.getCBWorld();
-            farmworldWorld.setSpawnLocation(new Location(world, 0, world.getHighestBlockAt(0, 0).getY(), 0));
+            farmworldWorld.setSpawnLocation(new Location(world, 0, world.getHighestBlockAt(0, 0).getY() + 1, 0));
 
         }
         else
@@ -101,8 +105,7 @@ public final class Farmworld extends JavaPlugin {
     }
 
     public void placeSchematics(Clipboard clipboard , Location loc)
-    {
-        try { //Pasting Operation
+    {//Pasting Operation
 // We need to adapt our world into a format that worldedit accepts. This looks like this:
 // Ensure it is using com.sk89q... otherwise we'll just be adapting a world into the same world.
 
@@ -110,7 +113,7 @@ public final class Farmworld extends JavaPlugin {
 
 // Saves our operation and builds the paste - ready to be completed.
             Operation operation = new ClipboardHolder(clipboard).createPaste(editSession)
-                    .to(BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())).ignoreAirBlocks(true).build();
+                    .to(BlockVector3.at(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())).ignoreAirBlocks(false).build();
 
             try { // This simply completes our paste and then cleans up.
                 Operations.complete(operation);
@@ -120,9 +123,6 @@ public final class Farmworld extends JavaPlugin {
                 getServer().getLogger().warning(ChatColor.RED + "OOPS! Something went wrong, please contact an administrator");
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public MVWorldManager getMVWorldManager()
@@ -148,6 +148,16 @@ public final class Farmworld extends JavaPlugin {
     public FileConfiguration getcreatetimefileconfig()
         {
         return this.createtimefileconfig;
+    }
+
+    public void regenFarmworld()
+    {
+        getServer().broadcastMessage("Farmwelt wird neu erstellt .....");
+        getMVWorldManager().regenWorld("farmworld",true,true,"",true);
+        MultiverseWorld farmworldWorld = getMVWorldManager().getMVWorld("farmworld");
+        World world = farmworldWorld.getCBWorld();
+        placeSchematics(getClipboard(),new Location(world, 0, world.getHighestBlockAt(0, 0).getY() - 1, 0));
+        getServer().broadcastMessage("Farmwelt wurde erstellt");
     }
 
     public Clipboard getClipboard() {

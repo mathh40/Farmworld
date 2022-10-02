@@ -5,3 +5,14 @@ api-version: 1.17
 depend: ['Multiverse-Core']
 authors: [ mathh40 ]
 description: Auto Farmworld maker
+commands:
+  farmworld:
+    description: Teleport to Farmworld
+    usage: "/farmworld"
+    permission: farmworld.use
+permissions:
+  farmworld.use:
+    default: true
+  farmworld.regen:
+    default: op
+
