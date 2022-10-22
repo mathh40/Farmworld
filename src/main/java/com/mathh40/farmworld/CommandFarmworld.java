@@ -5,6 +5,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+
 public class CommandFarmworld implements CommandExecutor {
 
     private Farmworld plugin;
@@ -16,18 +19,19 @@ public class CommandFarmworld implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(args.length == 0)
+        if(args.length == 1)
         {
             if(sender instanceof Player)
             {
                 Player player = (Player) sender;
-                player.teleport(plugin.getMVWorldManager().getMVWorld("farmworld").getSpawnLocation());
+                player.teleport(plugin.getMVWorldManager().getMVWorld(args[0]).getSpawnLocation());
             }
             else
             {
                 plugin.getServer().getLogger().warning("This command cannot use on the Console");
             }
-        } else if (args.length == 1) {
+        } else if (args.length > 1) {
+            String name = args[1];
             switch (args[0])
             {
                 case "regen":
@@ -36,13 +40,26 @@ public class CommandFarmworld implements CommandExecutor {
                         Player player = (Player) sender;
                         if(player.hasPermission("farmworld.regen"))
                         {
-                            plugin.regenFarmworld();
+                            FarmworldInstances instances = Farmworld.farmworlds.get(name);
+                            instances.regenFarmworld();
                         }
                     }
                     else
                     {
-                        plugin.regenFarmworld();
+                        FarmworldInstances instances = Farmworld.farmworlds.get(name);
+                        instances.regenFarmworld();
                     }
+                    break;
+                case "create":
+                    if (args.length > 3) {
+
+                        FarmworldInstances instances = new FarmworldInstances(plugin, name, args[2],args[3]);
+                        Farmworld.farmworlds.put(name, instances);
+                    }
+                    break;
+                case "remove":
+                    Farmworld.farmworlds.get(name).removeFarmworld();
+                    Farmworld.farmworlds.remove(name);
                     break;
             }
         }
